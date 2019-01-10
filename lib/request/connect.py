@@ -447,6 +447,9 @@ class Connect(object):
                 else:
                     return None, None, None
 
+                if hasattr(kb, 'auth_token'):
+                    req.headers['Authorization'] = kb.auth_token
+
                 requestHeaders += "\r\n".join(["%s: %s" % (getUnicode(key.capitalize() if isinstance(key, basestring) else key), getUnicode(value)) for (key, value) in req.header_items()])
 
                 if not getRequestHeader(req, HTTP_HEADER.COOKIE) and conf.cj:
@@ -506,6 +509,9 @@ class Connect(object):
                     responseHeaders = conn.info()
                     responseHeaders[URI_HTTP_HEADER] = conn.geturl()
                     kb.serverHeader = responseHeaders.get(HTTP_HEADER.SERVER, kb.serverHeader)
+                    _auth_token = conn.headers.get('Authorization', None)
+                    if _auth_token:
+                        kb.auth_token = _auth_token
                 else:
                     code = None
                     responseHeaders = {}
